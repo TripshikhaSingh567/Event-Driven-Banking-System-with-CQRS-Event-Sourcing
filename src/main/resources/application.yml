@@ -6,9 +6,9 @@ spring:
     name: banking-system
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/banking_system
+    url: jdbc:postgresql://localhost:5432/banking_system
     username: postgres
-    password: Trips@1234
+    password: Sahil1234
     driver-class-name: org.postgresql.Driver
 
   jpa:

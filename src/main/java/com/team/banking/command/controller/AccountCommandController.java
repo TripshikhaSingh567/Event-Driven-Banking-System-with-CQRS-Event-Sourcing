@@ -4,7 +4,6 @@ import com.team.banking.command.commands.OpenAccountCommand;
 import com.team.banking.command.dto.OpenAccountRequest;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.UUID;
 
 @RestController

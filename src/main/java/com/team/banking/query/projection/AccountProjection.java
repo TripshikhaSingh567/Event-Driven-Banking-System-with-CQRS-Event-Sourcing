@@ -5,6 +5,7 @@ import com.team.banking.query.entity.AccountEntity;
 import com.team.banking.query.repository.AccountRepository;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.stereotype.Component;
+import com.team.banking.event.events.MoneyDepositedEvent;
 
 @Component
 public class AccountProjection {
@@ -28,5 +29,24 @@ public class AccountProjection {
         accountRepository.save(account);
 
         System.out.println("Account saved in Read Database: " + account.getAccountId());
+    }
+
+
+    @EventHandler
+    public void on(MoneyDepositedEvent event) {
+
+        AccountEntity account = accountRepository.findById(event.getAccountId())
+                .orElseThrow(() ->
+                        new RuntimeException("Account not found"));
+
+        account.setBalance(
+                account.getBalance() + event.getAmount()
+        );
+
+        accountRepository.save(account);
+
+        System.out.println(
+                "Money deposited into account: " + account.getAccountId()
+        );
     }
 }

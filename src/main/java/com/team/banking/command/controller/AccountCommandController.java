@@ -1,12 +1,16 @@
 package com.team.banking.command.controller;
 
+import com.team.banking.command.commands.DepositMoneyCommand;
 import com.team.banking.command.commands.OpenAccountCommand;
+import com.team.banking.command.commands.WithdrawMoneyCommand;
+import com.team.banking.command.dto.DepositMoneyRequest;
 import com.team.banking.command.dto.OpenAccountRequest;
+import com.team.banking.command.dto.WithdrawMoneyRequest;
+import jakarta.validation.Valid;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.UUID;
-import com.team.banking.command.dto.DepositMoneyRequest;
-import com.team.banking.command.commands.DepositMoneyCommand;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -17,6 +21,8 @@ public class AccountCommandController {
     public AccountCommandController(CommandGateway commandGateway) {
         this.commandGateway = commandGateway;
     }
+
+    // ---------------- OPEN ACCOUNT ----------------
 
     @PostMapping
     public String openAccount(@RequestBody OpenAccountRequest request) {
@@ -36,6 +42,7 @@ public class AccountCommandController {
         return "Account created successfully. Account ID: " + accountId;
     }
 
+    // ---------------- DEPOSIT MONEY ----------------
 
     @PostMapping("/{accountId}/deposit")
     public String depositMoney(
@@ -51,5 +58,23 @@ public class AccountCommandController {
         commandGateway.sendAndWait(command);
 
         return "Money deposited successfully.";
+    }
+
+    // ---------------- WITHDRAW MONEY ----------------
+
+    @PutMapping("/{accountId}/withdraw")
+    public String withdrawMoney(
+            @PathVariable String accountId,
+            @Valid @RequestBody WithdrawMoneyRequest request) {
+
+        WithdrawMoneyCommand command =
+                new WithdrawMoneyCommand(
+                        accountId,
+                        request.getAmount()
+                );
+
+        commandGateway.sendAndWait(command);
+
+        return "Money withdrawn successfully.";
     }
 }

@@ -1,14 +1,16 @@
 package com.team.banking.command.aggregate;
 
+import com.team.banking.command.commands.DepositMoneyCommand;
 import com.team.banking.command.commands.OpenAccountCommand;
+import com.team.banking.command.commands.WithdrawMoneyCommand;
 import com.team.banking.event.events.AccountOpenedEvent;
+import com.team.banking.event.events.MoneyDepositedEvent;
+import com.team.banking.event.events.MoneyWithdrawnEvent;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
-import com.team.banking.command.commands.DepositMoneyCommand;
-import com.team.banking.event.events.MoneyDepositedEvent;
 
 @Aggregate
 public class AccountAggregate {
@@ -25,6 +27,8 @@ public class AccountAggregate {
     // Required by Axon
     public AccountAggregate() {
     }
+
+    // -------------------- OPEN ACCOUNT --------------------
 
     @CommandHandler
     public AccountAggregate(OpenAccountCommand command) {
@@ -44,6 +48,7 @@ public class AccountAggregate {
         );
     }
 
+    // -------------------- DEPOSIT MONEY --------------------
 
     @CommandHandler
     public void handle(DepositMoneyCommand command) {
@@ -61,6 +66,29 @@ public class AccountAggregate {
         );
     }
 
+    // -------------------- WITHDRAW MONEY --------------------
+
+    @CommandHandler
+    public void handle(WithdrawMoneyCommand command) {
+
+        // Business Validation
+        if (command.getAmount() <= 0) {
+            throw new IllegalArgumentException("Withdrawal amount must be greater than zero");
+        }
+
+        if (balance < command.getAmount()) {
+            throw new IllegalArgumentException("Insufficient balance");
+        }
+
+        AggregateLifecycle.apply(
+                new MoneyWithdrawnEvent(
+                        command.getAccountId(),
+                        command.getAmount()
+                )
+        );
+    }
+
+    // -------------------- EVENT SOURCING HANDLERS --------------------
 
     @EventSourcingHandler
     public void on(AccountOpenedEvent event) {
@@ -71,10 +99,15 @@ public class AccountAggregate {
         this.balance = event.getInitialBalance();
     }
 
-
     @EventSourcingHandler
     public void on(MoneyDepositedEvent event) {
 
         this.balance += event.getAmount();
+    }
+
+    @EventSourcingHandler
+    public void on(MoneyWithdrawnEvent event) {
+
+        this.balance -= event.getAmount();
     }
 }

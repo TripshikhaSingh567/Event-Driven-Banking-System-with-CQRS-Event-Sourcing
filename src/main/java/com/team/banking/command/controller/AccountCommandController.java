@@ -5,6 +5,8 @@ import com.team.banking.command.dto.OpenAccountRequest;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
+import com.team.banking.command.dto.DepositMoneyRequest;
+import com.team.banking.command.commands.DepositMoneyCommand;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -32,5 +34,22 @@ public class AccountCommandController {
         commandGateway.sendAndWait(command);
 
         return "Account created successfully. Account ID: " + accountId;
+    }
+
+
+    @PostMapping("/{accountId}/deposit")
+    public String depositMoney(
+            @PathVariable String accountId,
+            @RequestBody DepositMoneyRequest request) {
+
+        DepositMoneyCommand command =
+                new DepositMoneyCommand(
+                        accountId,
+                        request.getAmount()
+                );
+
+        commandGateway.sendAndWait(command);
+
+        return "Money deposited successfully.";
     }
 }

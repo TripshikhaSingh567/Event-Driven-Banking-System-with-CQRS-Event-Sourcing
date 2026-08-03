@@ -52,7 +52,8 @@ public class AccountCommandController {
         DepositMoneyCommand command =
                 new DepositMoneyCommand(
                         accountId,
-                        request.getAmount()
+                        request.getAmount(),
+                        null
                 );
 
         commandGateway.sendAndWait(command);
@@ -70,7 +71,8 @@ public class AccountCommandController {
         WithdrawMoneyCommand command =
                 new WithdrawMoneyCommand(
                         accountId,
-                        request.getAmount()
+                        request.getAmount(),
+                        null
                 );
 
         commandGateway.sendAndWait(command);

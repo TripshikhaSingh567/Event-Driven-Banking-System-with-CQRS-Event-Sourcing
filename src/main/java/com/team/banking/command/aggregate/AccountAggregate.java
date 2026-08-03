@@ -61,7 +61,8 @@ public class AccountAggregate {
         AggregateLifecycle.apply(
                 new MoneyDepositedEvent(
                         command.getAccountId(),
-                        command.getAmount()
+                        command.getAmount(),
+                        command.getTransferId()
                 )
         );
     }
@@ -83,7 +84,8 @@ public class AccountAggregate {
         AggregateLifecycle.apply(
                 new MoneyWithdrawnEvent(
                         command.getAccountId(),
-                        command.getAmount()
+                        command.getAmount(),
+                        command.getTransferId()
                 )
         );
     }

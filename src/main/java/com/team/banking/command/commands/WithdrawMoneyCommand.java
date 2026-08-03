@@ -9,9 +9,15 @@ public class WithdrawMoneyCommand {
 
     private final Double amount;
 
-    public WithdrawMoneyCommand(String accountId, Double amount) {
+    private final String transferId;
+
+    public WithdrawMoneyCommand(String accountId,
+                                Double amount,
+                                String transferId) {
+
         this.accountId = accountId;
         this.amount = amount;
+        this.transferId = transferId;
     }
 
     public String getAccountId() {
@@ -20,5 +26,9 @@ public class WithdrawMoneyCommand {
 
     public Double getAmount() {
         return amount;
+    }
+
+    public String getTransferId() {
+        return transferId;
     }
 }

@@ -7,6 +7,7 @@ import com.team.banking.query.entity.AccountEntity;
 import com.team.banking.query.repository.AccountRepository;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.stereotype.Component;
+import com.team.banking.event.events.AccountClosedEvent;
 
 @Component
 public class AccountProjection {
@@ -24,7 +25,8 @@ public class AccountProjection {
                 event.getAccountId(),
                 event.getCustomerName(),
                 event.getAccountType(),
-                event.getInitialBalance()
+                event.getInitialBalance(),
+                "ACTIVE"
         );
 
         accountRepository.save(account);
@@ -65,6 +67,25 @@ public class AccountProjection {
 
         System.out.println(
                 "Money withdrawn from account: " + account.getAccountId()
+        );
+    }
+
+
+    @EventHandler
+    public void on(AccountClosedEvent event) {
+
+        AccountEntity account =
+                accountRepository.findById(event.getAccountId())
+                        .orElseThrow(() ->
+                                new RuntimeException("Account not found"));
+
+        account.setStatus("CLOSED");
+
+        accountRepository.save(account);
+
+        System.out.println(
+                "Account closed in Read Database: "
+                        + account.getAccountId()
         );
     }
 }

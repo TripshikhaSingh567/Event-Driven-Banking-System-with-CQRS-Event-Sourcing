@@ -9,6 +9,7 @@ import com.team.banking.command.dto.WithdrawMoneyRequest;
 import jakarta.validation.Valid;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.web.bind.annotation.*;
+import com.team.banking.command.commands.CloseAccountCommand;
 
 import java.util.UUID;
 
@@ -78,5 +79,20 @@ public class AccountCommandController {
         commandGateway.sendAndWait(command);
 
         return "Money withdrawn successfully.";
+    }
+
+
+    // ---------------- CLOSE ACCOUNT ----------------
+
+    @PutMapping("/{accountId}/close")
+    public String closeAccount(
+            @PathVariable String accountId) {
+
+        CloseAccountCommand command =
+                new CloseAccountCommand(accountId);
+
+        commandGateway.sendAndWait(command);
+
+        return "Account closed successfully.";
     }
 }

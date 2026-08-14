@@ -11,6 +11,8 @@ import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
+import com.team.banking.command.commands.CloseAccountCommand;
+import com.team.banking.event.events.AccountClosedEvent;
 
 @Aggregate
 public class AccountAggregate {
@@ -23,6 +25,8 @@ public class AccountAggregate {
     private String accountType;
 
     private Double balance;
+
+    private String status;
 
     // Required by Axon
     public AccountAggregate() {
@@ -90,6 +94,31 @@ public class AccountAggregate {
         );
     }
 
+
+    // -------------------- CLOSE ACCOUNT --------------------
+
+    @CommandHandler
+    public void handle(CloseAccountCommand command) {
+
+        if ("CLOSED".equals(status)) {
+            throw new IllegalStateException(
+                    "Account is already closed"
+            );
+        }
+
+        if (balance != 0) {
+            throw new IllegalStateException(
+                    "Account cannot be closed while balance is not zero"
+            );
+        }
+
+        AggregateLifecycle.apply(
+                new AccountClosedEvent(
+                        command.getAccountId()
+                )
+        );
+    }
+
     // -------------------- EVENT SOURCING HANDLERS --------------------
 
     @EventSourcingHandler
@@ -99,6 +128,7 @@ public class AccountAggregate {
         this.customerName = event.getCustomerName();
         this.accountType = event.getAccountType();
         this.balance = event.getInitialBalance();
+        this.status = "ACTIVE";
     }
 
     @EventSourcingHandler
@@ -111,5 +141,11 @@ public class AccountAggregate {
     public void on(MoneyWithdrawnEvent event) {
 
         this.balance -= event.getAmount();
+    }
+
+    @EventSourcingHandler
+    public void on(AccountClosedEvent event) {
+
+        this.status = "CLOSED";
     }
 }

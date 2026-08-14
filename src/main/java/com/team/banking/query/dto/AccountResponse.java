@@ -7,17 +7,23 @@ public class AccountResponse {
     private String accountType;
     private Double balance;
 
+    private String status;
+
     public AccountResponse() {
     }
 
-    public AccountResponse(String accountId,
-                           String customerName,
-                           String accountType,
-                           Double balance) {
+    public AccountResponse(
+            String accountId,
+            String customerName,
+            String accountType,
+            Double balance,
+            String status) {
+
         this.accountId = accountId;
         this.customerName = customerName;
         this.accountType = accountType;
         this.balance = balance;
+        this.status = status;
     }
 
     public String getAccountId() {
@@ -50,5 +56,13 @@ public class AccountResponse {
 
     public void setBalance(Double balance) {
         this.balance = balance;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

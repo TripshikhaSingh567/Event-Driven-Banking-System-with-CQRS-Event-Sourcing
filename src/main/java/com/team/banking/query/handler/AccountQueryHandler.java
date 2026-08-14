@@ -31,7 +31,8 @@ public class AccountQueryHandler {
                 account.getAccountId(),
                 account.getCustomerName(),
                 account.getAccountType(),
-                account.getBalance()
+                account.getBalance(),
+                account.getStatus()
         );
     }
 
@@ -40,12 +41,15 @@ public class AccountQueryHandler {
 
         return accountRepository.findAll()
                 .stream()
-                .map(account -> new AccountResponse(
-                        account.getAccountId(),
-                        account.getCustomerName(),
-                        account.getAccountType(),
-                        account.getBalance()
-                ))
-                .collect(Collectors.toList());
+                .map(account ->
+                        new AccountResponse(
+                                account.getAccountId(),
+                                account.getCustomerName(),
+                                account.getAccountType(),
+                                account.getBalance(),
+                                account.getStatus()
+                        )
+                )
+                .toList();
     }
 }

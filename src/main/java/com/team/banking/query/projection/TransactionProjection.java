@@ -11,6 +11,8 @@ import com.team.banking.query.repository.AccountRepository;
 import com.team.banking.query.repository.TransactionRepository;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.stereotype.Component;
+import com.team.banking.event.events.AccountClosedEvent;
+
 
 import java.time.LocalDateTime;
 
@@ -103,6 +105,35 @@ public class TransactionProjection {
                 );
 
         transactionRepository.save(transaction);
+    }
+
+    // ---------------- ACCOUNT CLOSED ----------------
+
+    @EventHandler
+    public void on(AccountClosedEvent event) {
+
+        AccountEntity account =
+                accountRepository.findById(event.getAccountId())
+                        .orElseThrow(() ->
+                                new RuntimeException("Account not found"));
+
+        TransactionEntity transaction =
+                new TransactionEntity(
+                        event.getAccountId(),
+                        "ACCOUNT_CLOSED",
+                        0.0,
+                        account.getBalance(),
+                        null,
+                        null,
+                        LocalDateTime.now()
+                );
+
+        transactionRepository.save(transaction);
+
+        System.out.println(
+                "Account closure recorded in transaction history: "
+                        + account.getAccountId()
+        );
     }
 
     // ---------------- TRANSFER STARTED ----------------
